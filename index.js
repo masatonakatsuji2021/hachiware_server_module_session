@@ -45,11 +45,11 @@ const path = require("path");
     }
 
     const getCookie = function(req, name){
-        return context.modules[conf._file].hachiware_Server_module_cookie.get(req, name);
+        return context.modules[conf._file].hachiware_server_module_cookie.get(req, name);
     };
 
-    const setCOokie = function(res, name, value, option){
-        return context.modules[conf._file].hachiware_Server_module_cookie.set(res, name, value, option);
+    const setCookie = function(res, name, value, option){
+        return context.modules[conf._file].hachiware_server_module_cookie.set(res, name, value, option);
     };
 
     this.getId = function(req, res){
@@ -141,6 +141,32 @@ const path = require("path");
     this.delete = function(req, name){
 
 
+    };
+
+    this.frameworkAdapter = function(req, res){
+
+        var vm = this;
+
+        var session = function(req, res){
+
+            this.getId = function(){
+                return vm.getId(req, res);
+            };
+
+            this.changeId = function(){
+                return vm.changeId(req, res);
+            };
+
+            this.get = function(name){
+                return vm.get(req, res, name);
+            };
+
+            this.set = function(name ,value, option){
+                return vm.set(req, res, name ,value, option);
+            };
+        };
+
+        return new session(req, res);
     };
 
 };
