@@ -1,0 +1,24 @@
+{
+  "name": "hachiware_server_module_session",
+  "version": "1.0.0",
+  "description": "A module for cache management for each request user of the Web server package \"hachiware_server\"..",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/masatonakatsuji2021/hachiware_server_module_session.git"
+  },
+  "keywords": [
+    "hachiware",
+    "hachiware_server",
+    "session"
+  ],
+  "author": "Nakatsuji Masato",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/masatonakatsuji2021/hachiware_server_module_session/issues"
+  },
+  "homepage": "https://hachiware-js.com/"
+}
