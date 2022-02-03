@@ -52,6 +52,12 @@ const path = require("path");
         return context.modules[conf._file].hachiware_server_module_cookie.set(res, name, value, option);
     };
 
+    /**
+     * getId
+     * @param {*} req 
+     * @param {*} res 
+     * @returns 
+     */
     this.getId = function(req, res){
         
         var id = getCookie(req, conf.sessions.idName);
@@ -69,6 +75,12 @@ const path = require("path");
         return newId;
     };
 
+    /**
+     * changeId
+     * @param {*} req 
+     * @param {*} res 
+     * @returns 
+     */
     this.changeId = function(req, res){
 
         var newId = tool.uniqId(conf.sessions.idLength, true);
@@ -84,11 +96,18 @@ const path = require("path");
         return newId;
     };
 
+    /**
+     * get
+     * @param {*} req 
+     * @param {*} res 
+     * @param {string} name 
+     * @returns 
+     */
     this.get = function(req, res, name){
 
         var id = this.getId(req, res);
 
-        var filePath = conf.rootPath + "/" + conf.session.path + "/" + id;
+        var filePath = conf.rootPath + "/" + conf.sessions.path + "/" + id;
 
         if(!fs.existsSync(filePath)){
             return null;
@@ -97,7 +116,7 @@ const path = require("path");
         var data = fs.readFileSync(filePath).toString();
 
         try{
-            data = JSON.stringify(data)
+            data = JSON.parse(data)
         }catch(error){
             data = {};
         }
@@ -115,7 +134,14 @@ const path = require("path");
         }
     };
 
-    this.set = function(req, res, name ,value, option){
+    /**
+     * set
+     * @param {*} req 
+     * @param {*} res 
+     * @param {string} name 
+     * @param {*} value 
+     */
+    this.set = function(req, res, name ,value){
 
         var id = this.getId(req, res);
 
@@ -125,9 +151,14 @@ const path = require("path");
             data = {};
         }
 
-        var filePath = conf.rootPath + "/" + conf.session.path + "/" + id;
+        var filePath = conf.rootPath + "/" + conf.sessions.path + "/" + id;
 
-        data[name] = value;
+        if(value){
+            data[name] = value;            
+        }
+        else{
+            delete data[name];
+        }
 
         data = JSON.stringify(data);
 
@@ -138,31 +169,78 @@ const path = require("path");
         fs.writeFileSync(filePath, data);
     };
 
+    /**
+     * delete
+     * @param {*} req 
+     * @param {*} name 
+     * @returns 
+     */
     this.delete = function(req, name){
-
-
+        return this.set(req, res, name, null);
     };
 
+    /**
+     * frameworkAdapter
+     * Hook to specify the method to provide to the framework
+     * @param {*} req 
+     * @param {*} res 
+     * @returns 
+     */
     this.frameworkAdapter = function(req, res){
 
         var vm = this;
 
         var session = function(req, res){
 
+            /**
+             * getId
+             * Gets the current session ID (HSSID).
+             * @returns 
+             */
             this.getId = function(){
                 return vm.getId(req, res);
             };
 
+            /**
+             * changeId
+             * Change to another session ID (HSSID).
+             * Recommended for session hijacking protection.
+             * @returns 
+             */
             this.changeId = function(){
                 return vm.changeId(req, res);
             };
 
+            /**
+             * get
+             * Get session information.
+             * @param {string} name Item name of session data
+             * If not specified, all session data owned by the request user will be acquired.
+             * @returns {*} 
+             */
             this.get = function(name){
                 return vm.get(req, res, name);
             };
 
-            this.set = function(name ,value, option){
-                return vm.set(req, res, name ,value, option);
+            /**
+             * set
+             * Add or update session data.
+             * @param {string} name Item name of session data to be added or updated.
+             * @param {*} value Value of session data to add or update.
+             * @returns 
+             */
+            this.set = function(name ,value){
+                return vm.set(req, res, name ,value);
+            };
+
+            /**
+             * delete
+             * Delete session data
+             * @param {string} name Session data item name to be deleted.
+             * @returns 
+             */ 
+            this.delete = function(name){
+                return vm.delete(req, name);
             };
         };
 
