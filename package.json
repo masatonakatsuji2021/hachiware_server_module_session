@@ -1,6 +1,6 @@
 {
   "name": "hachiware_server_module_session",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A module for cache management for each request user of the Web server package \"hachiware_server\"..",
   "main": "index.js",
   "scripts": {
